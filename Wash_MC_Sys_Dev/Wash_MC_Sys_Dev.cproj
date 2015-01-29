@@ -67,7 +67,7 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Wash_MC_Sys_Dev.c">
+    <Compile Include="Control_stg_1.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
