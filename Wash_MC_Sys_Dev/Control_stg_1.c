@@ -17,7 +17,7 @@ Port Assignments:
 SW1 Pin C_0, INPUT, PULLUP, "Hot Select"
 SW2 Pin C_1, INPUT, PULLUP, "Warm Select"
 SW3 Pin C_2, INPUT, PULLUP, "Cold Select"
-SW4 Pin C_3, INPUT, PULLUP, "Open Door"
+SW4 Pin C_3, INPUT, PULLUP, "Door Closed"
 
 PB1 Pin C_4, INPUT, PULLUP, "Start/Run"
 
@@ -51,13 +51,23 @@ int main(void)
 	init_port();		//Initialize ports
 	init_timer0();		//Initialize timer0
 	
-	delay(5000);
-	PORTB = 0x00;
+	//Variable declarations
+	uint8_t input;
+	uint8_t ouput;
 	
 	//Super loop
     while(1)
     {
-        
+		input = PINC
+		PORTB = (PINC&0x10);
+		/*
+		while (~(PINC&0x10));	//Wait for START button pressed
+		
+		if (~(PINC & 0x08))
+		{
+			break;
+		}
+		*/
     }
 }
 
@@ -73,7 +83,7 @@ void init_port(void)
 	PORTB = 0xFF;	//Configure port B as LOW
 	
 	DDRC = 0xFF;	//Configure port C as INPUT
-	PORTC = 0xFF;	//Configure port C as PULLUP
+	//PORTC = 0xFF;	//Configure port C as PULLUP
 	
 	DDRD = 0xFF;	//Configure port D as OUTPUT
 	PORTD = 0xFF;	//Configure port D as LOW
