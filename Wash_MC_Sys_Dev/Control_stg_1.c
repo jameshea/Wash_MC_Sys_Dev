@@ -42,10 +42,18 @@ LED Pin D_0, OUTPUT, "Finish LED"
 void init_timer0(void);
 //Initializes timer0
 void init_port(void);
+//Delay function
+void delay(int);
 
 //Main function, program start
 int main(void)
 {
+	init_port();		//Initialize ports
+	init_timer0();		//Initialize timer0
+	
+	delay(5000);
+	PORTB = 0x00;
+	
 	//Super loop
     while(1)
     {
@@ -71,4 +79,23 @@ void init_port(void)
 	PORTD = 0xFF;	//Configure port D as LOW
 }
 
-void init_timer0(void);
+void init_timer0(void)
+{
+	TCNT0 = 0;		//Initialize TCNT0 to 0
+	OCR0A = 131;	//Set OCR to count to 131
+	TCCR0A = 0x00;	//No PWM in normal mode
+	TCCR0B = 0x00;	//Set timer off
+}
+
+void delay(int time)
+{
+	for (int i=0; i < time; i++)
+	{
+		TCCR0B = 0x02;						//Start timer with x8 prescaler
+		while ((TIFR0 & (1<<OCF0A)) == 0);	//Wait for compare condition
+		TIFR0 = TIFR0 | (1<<OCF0A);			//Clear overflow flag
+		TCNT0 = 0x00;						//Set counter to 0 
+	}
+	
+	TCCR0B = 0x00;						//Stop timer
+}
