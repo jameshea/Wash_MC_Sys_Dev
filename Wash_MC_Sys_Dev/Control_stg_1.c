@@ -32,14 +32,43 @@ LED Pin D_1, OUTPUT, "Cold Valve"
 LED Pin D_0, OUTPUT, "Finish LED"
  */ 
 
+#define F_CPU 1000000UL		//Define the CPU clock frequency as 1 MHz
 
-#include <avr/io.h>
+#include <avr/io.h>			//Common I/O functions and mC setup
+#include <util/delay.h>		//Timer delays for uS and mS
 
 
+//Initializes ports B, C, and D		WARNING: THIS FUNCTION IS NOT IMPLEMENTED
+void init_timer0(void);
+//Initializes timer0
+void init_port(void);
+
+//Main function, program start
 int main(void)
 {
+	//Super loop
     while(1)
     {
-        //TODO:: Please write your application code 
+        
     }
 }
+
+void init_port(void)
+{
+	/*
+	This function is used to initialize the ports the
+	microcontroller needs.  In this case B0-3, C0-4,
+	D0-3 all need to be configured.
+	*/
+	
+	DDRB = 0xFF;	//Configure port B as OUTPUT
+	PORTB = 0xFF;	//Configure port B as LOW
+	
+	DDRC = 0xFF;	//Configure port C as INPUT
+	PORTC = 0xFF;	//Configure port C as PULLUP
+	
+	DDRD = 0xFF;	//Configure port D as OUTPUT
+	PORTD = 0xFF;	//Configure port D as LOW
+}
+
+void init_timer0(void);
