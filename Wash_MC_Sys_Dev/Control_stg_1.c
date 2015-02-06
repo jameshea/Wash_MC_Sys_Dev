@@ -17,7 +17,7 @@ Port Assignments:
 SW1 Pin C_0, INPUT, PULLUP, "Hot Select"
 SW2 Pin C_1, INPUT, PULLUP, "Warm Select"
 SW3 Pin C_2, INPUT, PULLUP, "Cold Select"
-SW4 Pin C_3, INPUT, PULLUP, "Door Closed"
+SW4 Pin C_3, INPUT, PULLUP, "Open Door"
 
 PB1 Pin C_4, INPUT, PULLUP, "Start/Run"
 
@@ -51,19 +51,22 @@ int main(void)
 	init_port();		//Initialize ports
 	init_timer0();		//Initialize timer0
 	
-	//Variable declarations
-	uint8_t input;
-	uint8_t ouput;
+	delay(5000);
+	PORTB = 0x00;
 	
 	//Super loop
     while(1)
     {
+<<<<<<< HEAD
 		while (!(input&0x10))
 		{
 			input = ~PINC;
 		}		
 		
 		PORTB = 0x00;
+=======
+        
+>>>>>>> parent of b04a92c... Day end not working.
     }
 }
 
