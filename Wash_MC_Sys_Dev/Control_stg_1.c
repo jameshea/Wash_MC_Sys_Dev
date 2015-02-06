@@ -58,16 +58,12 @@ int main(void)
 	//Super loop
     while(1)
     {
-		input = PINC
-		PORTB = (PINC&0x10);
-		/*
-		while (~(PINC&0x10));	//Wait for START button pressed
-		
-		if (~(PINC & 0x08))
+		while (!(input&0x10))
 		{
-			break;
-		}
-		*/
+			input = ~PINC;
+		}		
+		
+		PORTB = 0x00;
     }
 }
 
@@ -83,7 +79,7 @@ void init_port(void)
 	PORTB = 0xFF;	//Configure port B as LOW
 	
 	DDRC = 0xFF;	//Configure port C as INPUT
-	//PORTC = 0xFF;	//Configure port C as PULLUP
+	PORTC = 0xFF;	//Configure port C as PULLUP
 	
 	DDRD = 0xFF;	//Configure port D as OUTPUT
 	PORTD = 0xFF;	//Configure port D as LOW
