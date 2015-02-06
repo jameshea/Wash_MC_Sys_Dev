@@ -58,12 +58,16 @@ int main(void)
     while(1)
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		while (!(input&0x10))
 		{
 			input = ~PINC;
 		}		
 		
 		PORTB = 0x00;
+=======
+        
+>>>>>>> parent of b04a92c... Day end not working.
 =======
         
 >>>>>>> parent of b04a92c... Day end not working.
