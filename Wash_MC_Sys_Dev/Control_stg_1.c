@@ -17,7 +17,7 @@ Port Assignments:
 SW1 Pin C_0, INPUT, PULLUP, "Hot Select"
 SW2 Pin C_1, INPUT, PULLUP, "Warm Select"
 SW3 Pin C_2, INPUT, PULLUP, "Cold Select"
-SW4 Pin C_3, INPUT, PULLUP, "Open Door"
+SW4 Pin C_3, INPUT, PULLUP, "Door Closed"
 
 PB1 Pin C_4, INPUT, PULLUP, "Start/Run"
 
@@ -42,14 +42,32 @@ LED Pin D_0, OUTPUT, "Finish LED"
 void init_timer0(void);
 //Initializes timer0
 void init_port(void);
+//Delay function
+void delay(int);
 
 //Main function, program start
 int main(void)
 {
+	init_port();		//Initialize ports
+	init_timer0();		//Initialize timer0
+	
+	//Variable declarations
+	uint8_t input;
+	uint8_t ouput;
+	
 	//Super loop
     while(1)
     {
-        
+		input = PINC
+		PORTB = (PINC&0x10);
+		/*
+		while (~(PINC&0x10));	//Wait for START button pressed
+		
+		if (~(PINC & 0x08))
+		{
+			break;
+		}
+		*/
     }
 }
 
@@ -65,10 +83,29 @@ void init_port(void)
 	PORTB = 0xFF;	//Configure port B as LOW
 	
 	DDRC = 0xFF;	//Configure port C as INPUT
-	PORTC = 0xFF;	//Configure port C as PULLUP
+	//PORTC = 0xFF;	//Configure port C as PULLUP
 	
 	DDRD = 0xFF;	//Configure port D as OUTPUT
 	PORTD = 0xFF;	//Configure port D as LOW
 }
 
-void init_timer0(void);
+void init_timer0(void)
+{
+	TCNT0 = 0;		//Initialize TCNT0 to 0
+	OCR0A = 131;	//Set OCR to count to 131
+	TCCR0A = 0x00;	//No PWM in normal mode
+	TCCR0B = 0x00;	//Set timer off
+}
+
+void delay(int time)
+{
+	for (int i=0; i < time; i++)
+	{
+		TCCR0B = 0x02;						//Start timer with x8 prescaler
+		while ((TIFR0 & (1<<OCF0A)) == 0);	//Wait for compare condition
+		TIFR0 = TIFR0 | (1<<OCF0A);			//Clear overflow flag
+		TCNT0 = 0x00;						//Set counter to 0 
+	}
+	
+	TCCR0B = 0x00;						//Stop timer
+}

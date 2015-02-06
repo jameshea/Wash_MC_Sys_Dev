@@ -3,23 +3,25 @@ Wash_MC_Sys_Dev.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000106  00000000  00000000  00000054  2**1
+  0 .text         00000198  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .comment      00000030  00000000  00000000  0000015a  2**0
+  1 .comment      00000030  00000000  00000000  000001ec  2**0
                   CONTENTS, READONLY
-  2 .debug_aranges 00000028  00000000  00000000  0000018a  2**0
+  2 .debug_aranges 00000038  00000000  00000000  0000021c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  3 .debug_info   0000009d  00000000  00000000  000001b2  2**0
+  3 .debug_info   000000ee  00000000  00000000  00000254  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_abbrev 0000006b  00000000  00000000  0000024f  2**0
+  4 .debug_abbrev 000000aa  00000000  00000000  00000342  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_line   000000c7  00000000  00000000  000002ba  2**0
+  5 .debug_line   00000111  00000000  00000000  000003ec  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_frame  00000034  00000000  00000000  00000384  2**2
+  6 .debug_frame  00000094  00000000  00000000  00000500  2**2
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_str    00000132  00000000  00000000  000003b8  2**0
+  7 .debug_str    00000149  00000000  00000000  00000594  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_ranges 00000018  00000000  00000000  000004ea  2**0
+  8 .debug_loc    000000f9  00000000  00000000  000006dd  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_ranges 00000028  00000000  00000000  000007d6  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -93,22 +95,136 @@ Disassembly of section .text:
   f0:	00 e0       	ldi	r16, 0x00	; 0
   f2:	0c bf       	out	0x3c, r16	; 60
   f4:	0e 94 80 00 	call	0x100	; 0x100 <main>
-  f8:	0c 94 81 00 	jmp	0x102	; 0x102 <_exit>
+  f8:	0c 94 ca 00 	jmp	0x194	; 0x194 <_exit>
 
 000000fc <__bad_interrupt>:
   fc:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 00000100 <main>:
-//Initializes timer0
-void init_port(void);
+//Delay function
+void delay(int);
 
 //Main function, program start
 int main(void)
 {
- 100:	ff cf       	rjmp	.-2      	; 0x100 <main>
+ 100:	cf 93       	push	r28
+ 102:	df 93       	push	r29
+ 104:	cd b7       	in	r28, 0x3d	; 61
+ 106:	de b7       	in	r29, 0x3e	; 62
+	init_port();		//Initialize ports
+ 108:	0e 94 92 00 	call	0x124	; 0x124 <init_port>
+	init_timer0();		//Initialize timer0
+ 10c:	0e 94 b2 00 	call	0x164	; 0x164 <init_timer0>
+	
+	//Super loop
+    while(1)
+    {
+		PORTB = (PINC&0x10);
+ 110:	85 e2       	ldi	r24, 0x25	; 37
+ 112:	90 e0       	ldi	r25, 0x00	; 0
+ 114:	26 e2       	ldi	r18, 0x26	; 38
+ 116:	30 e0       	ldi	r19, 0x00	; 0
+ 118:	f9 01       	movw	r30, r18
+ 11a:	20 81       	ld	r18, Z
+ 11c:	20 71       	andi	r18, 0x10	; 16
+ 11e:	fc 01       	movw	r30, r24
+ 120:	20 83       	st	Z, r18
+		if (~(PINC & 0x08))
+		{
+			break;
+		}
+		*/
+    }
+ 122:	f6 cf       	rjmp	.-20     	; 0x110 <main+0x10>
 
-00000102 <_exit>:
- 102:	f8 94       	cli
+00000124 <init_port>:
+}
 
-00000104 <__stop_program>:
- 104:	ff cf       	rjmp	.-2      	; 0x104 <__stop_program>
+void init_port(void)
+{
+ 124:	cf 93       	push	r28
+ 126:	df 93       	push	r29
+ 128:	cd b7       	in	r28, 0x3d	; 61
+ 12a:	de b7       	in	r29, 0x3e	; 62
+	This function is used to initialize the ports the
+	microcontroller needs.  In this case B0-3, C0-4,
+	D0-3 all need to be configured.
+	*/
+	
+	DDRB = 0xFF;	//Configure port B as OUTPUT
+ 12c:	84 e2       	ldi	r24, 0x24	; 36
+ 12e:	90 e0       	ldi	r25, 0x00	; 0
+ 130:	2f ef       	ldi	r18, 0xFF	; 255
+ 132:	fc 01       	movw	r30, r24
+ 134:	20 83       	st	Z, r18
+	PORTB = 0xFF;	//Configure port B as LOW
+ 136:	85 e2       	ldi	r24, 0x25	; 37
+ 138:	90 e0       	ldi	r25, 0x00	; 0
+ 13a:	2f ef       	ldi	r18, 0xFF	; 255
+ 13c:	fc 01       	movw	r30, r24
+ 13e:	20 83       	st	Z, r18
+	
+	DDRC = 0xFF;	//Configure port C as INPUT
+ 140:	87 e2       	ldi	r24, 0x27	; 39
+ 142:	90 e0       	ldi	r25, 0x00	; 0
+ 144:	2f ef       	ldi	r18, 0xFF	; 255
+ 146:	fc 01       	movw	r30, r24
+ 148:	20 83       	st	Z, r18
+	//PORTC = 0xFF;	//Configure port C as PULLUP
+	
+	DDRD = 0xFF;	//Configure port D as OUTPUT
+ 14a:	8a e2       	ldi	r24, 0x2A	; 42
+ 14c:	90 e0       	ldi	r25, 0x00	; 0
+ 14e:	2f ef       	ldi	r18, 0xFF	; 255
+ 150:	fc 01       	movw	r30, r24
+ 152:	20 83       	st	Z, r18
+	PORTD = 0xFF;	//Configure port D as LOW
+ 154:	8b e2       	ldi	r24, 0x2B	; 43
+ 156:	90 e0       	ldi	r25, 0x00	; 0
+ 158:	2f ef       	ldi	r18, 0xFF	; 255
+ 15a:	fc 01       	movw	r30, r24
+ 15c:	20 83       	st	Z, r18
+}
+ 15e:	df 91       	pop	r29
+ 160:	cf 91       	pop	r28
+ 162:	08 95       	ret
+
+00000164 <init_timer0>:
+
+void init_timer0(void)
+{
+ 164:	cf 93       	push	r28
+ 166:	df 93       	push	r29
+ 168:	cd b7       	in	r28, 0x3d	; 61
+ 16a:	de b7       	in	r29, 0x3e	; 62
+	TCNT0 = 0;		//Initialize TCNT0 to 0
+ 16c:	86 e4       	ldi	r24, 0x46	; 70
+ 16e:	90 e0       	ldi	r25, 0x00	; 0
+ 170:	fc 01       	movw	r30, r24
+ 172:	10 82       	st	Z, r1
+	OCR0A = 131;	//Set OCR to count to 131
+ 174:	87 e4       	ldi	r24, 0x47	; 71
+ 176:	90 e0       	ldi	r25, 0x00	; 0
+ 178:	23 e8       	ldi	r18, 0x83	; 131
+ 17a:	fc 01       	movw	r30, r24
+ 17c:	20 83       	st	Z, r18
+	TCCR0A = 0x00;	//No PWM in normal mode
+ 17e:	84 e4       	ldi	r24, 0x44	; 68
+ 180:	90 e0       	ldi	r25, 0x00	; 0
+ 182:	fc 01       	movw	r30, r24
+ 184:	10 82       	st	Z, r1
+	TCCR0B = 0x00;	//Set timer off
+ 186:	85 e4       	ldi	r24, 0x45	; 69
+ 188:	90 e0       	ldi	r25, 0x00	; 0
+ 18a:	fc 01       	movw	r30, r24
+ 18c:	10 82       	st	Z, r1
+}
+ 18e:	df 91       	pop	r29
+ 190:	cf 91       	pop	r28
+ 192:	08 95       	ret
+
+00000194 <_exit>:
+ 194:	f8 94       	cli
+
+00000196 <__stop_program>:
+ 196:	ff cf       	rjmp	.-2      	; 0x196 <__stop_program>
